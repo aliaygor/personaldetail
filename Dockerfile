@@ -11,4 +11,4 @@ COPY . /app
 RUN mvn clean package
 
 # Specify the JAR file to run on container startup
-ENTRYPOINT ["java", "-jar", "target/personaldetail.jar"]
+ENTRYPOINT ["java", "-jar", "./target/personaldetail.jar"]
