@@ -1,5 +1,5 @@
 # Docker base image
-FROM openjdk:17-jdk
+FROM maven:3.8-openjdk-17-slim
 
 # Set working directory
 WORKDIR /app
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 # Build the application with Maven
-RUN ./mvnw clean package
+RUN mvn clean package
 
 # Specify the JAR file to run on container startup
 ENTRYPOINT ["java", "-jar", "target/personaldetail.jar"]
