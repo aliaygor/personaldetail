@@ -1,13 +1,14 @@
-# syntax=docker/dockerfile:1
+# Docker base image
+FROM openjdk:17-jdk
 
-FROM eclipse-temurin:17-jdk-jammy
-
+# Set working directory
 WORKDIR /app
 
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:resolve
+# Copy the project files into the container
+COPY . /app
 
-COPY src ./src
+# Build the application with Maven
+RUN ./mvnw clean package
 
-CMD ["./mvnw", "spring-boot:run"]
+# Specify the JAR file to run on container startup
+ENTRYPOINT ["java", "-jar", "target/personaldetail.jar"]
