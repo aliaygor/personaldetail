@@ -26,7 +26,7 @@ public class HaftalarController {
 	}
 
 	@GetMapping("/allHaftalar")
-	@CrossOrigin(origins = "http://personaldetail.onrender.com")
+	//@CrossOrigin(origins = "http://personaldetail.onrender.com/haftalar/allHaftalar")
 	public List<HaftalarEntity> getAllHaftalar(){
 		return this.haftalarService.getAllHaftalar();
 	}
