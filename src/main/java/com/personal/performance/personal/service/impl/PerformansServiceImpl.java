@@ -70,7 +70,7 @@ public class PerformansServiceImpl implements PerformansService{
 	}
 
 	@Override
-	public void updateYoneticiPuaniYpd(List<PerformansYoneticiPuaniDto> performansYoneticiPuaniList) {
+	public List<PerformansEntity> updateYoneticiPuaniYpd(List<PerformansYoneticiPuaniDto> performansYoneticiPuaniList) {
 		performansYoneticiPuaniList.stream().forEach(yoneticiPuani -> {
 			PerformansEntity performansEntity = this.performansRepository.findPerformansByPersonelIdAndHaftaSira(yoneticiPuani.getPersonalId(), yoneticiPuani.getHaftaId());
 			performansEntity.setYoneticiPuani(yoneticiPuani.getYoneticiPuani());
@@ -82,10 +82,13 @@ public class PerformansServiceImpl implements PerformansService{
 			
 			this.performansRepository.save(performansEntity);
 		}); 
+		
+		return this.performansRepository.findPerformansByHaftaSira(performansYoneticiPuaniList.get(0).getHaftaId().intValue());
+
 	}
 
 	@Override
-	public void updateYenidenAcilanCagriPuaniYcs(YenidenAcilanCagriDto yenidenAcilanCagriDto) {
+	public List<PerformansEntity> updateYenidenAcilanCagriPuaniYcs(YenidenAcilanCagriDto yenidenAcilanCagriDto) {
 
 		Optional<HaftalarEntity> haftaEntity = this.haftalarRepository.findById(Long.valueOf(yenidenAcilanCagriDto.getHaftaId()));
 		List<PerformansEntity> performansEntityList = this.performansRepository.findPerformansByHaftaSira(yenidenAcilanCagriDto.getHaftaId());
@@ -108,12 +111,20 @@ public class PerformansServiceImpl implements PerformansService{
 				performans.setYcsPuani(ycsPuani);
 			});
 		}
+		
+		return this.performansRepository.findPerformansByHaftaSira(yenidenAcilanCagriDto.getHaftaId());
+
 	}
 	
 	@Override
 	public List<EkipPersonalCcsYcsYpd> getCcsYcsYpdEkipPersonal(Long hafta1, Long hafta2, String ekip) {
 		//this.performansRepository.findB
 		return null;
+	}
+	
+	@Override
+	public List<PerformansEntity> getAllPerformansByHafta(Integer hafta) {
+		return this.performansRepository.findPerformansByHaftaSira(hafta);
 	}
 	
 }

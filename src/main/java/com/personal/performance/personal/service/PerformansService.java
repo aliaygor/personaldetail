@@ -20,10 +20,12 @@ public interface PerformansService {
 	
 	public List<PerformansEntity> updateBakilanCagriTamCcs(Integer haftaId);
 	
-	public void updateYoneticiPuaniYpd(List<PerformansYoneticiPuaniDto> performansYoneticiPuaniList);
+	public List<PerformansEntity> updateYoneticiPuaniYpd(List<PerformansYoneticiPuaniDto> performansYoneticiPuaniList);
 	
-	public void updateYenidenAcilanCagriPuaniYcs(YenidenAcilanCagriDto yenidenAcilanCagriDto);
+	public List<PerformansEntity> updateYenidenAcilanCagriPuaniYcs(YenidenAcilanCagriDto yenidenAcilanCagriDto);
 	
 	public List<EkipPersonalCcsYcsYpd> getCcsYcsYpdEkipPersonal(Long hafta1, Long hafta2, String ekip);
+	
+	public List<PerformansEntity> getAllPerformansByHafta(Integer hafta);
 
 }

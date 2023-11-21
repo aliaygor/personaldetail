@@ -50,18 +50,23 @@ public class PerformansController {
 	}
 	
 	@PostMapping("/updateYoneticiPuaniYpd")
-	public void updateYoneticiPuaniYpd(@RequestBody List<PerformansYoneticiPuaniDto> performansYoneticiPuaniList){
-		this.performansService.updateYoneticiPuaniYpd(performansYoneticiPuaniList);
+	public List<PerformansEntity> updateYoneticiPuaniYpd(@RequestBody List<PerformansYoneticiPuaniDto> performansYoneticiPuaniList){
+		return this.performansService.updateYoneticiPuaniYpd(performansYoneticiPuaniList);
 	}
 	
 	@PostMapping("/updateYenidenAcilanCagriPuaniYcs")
-	public void updateYenidenAcilanCagriPuaniYcs(@RequestBody YenidenAcilanCagriDto yenidenAcilanCagri){
-		this.performansService.updateYenidenAcilanCagriPuaniYcs(yenidenAcilanCagri);
+	public List<PerformansEntity> updateYenidenAcilanCagriPuaniYcs(@RequestBody YenidenAcilanCagriDto yenidenAcilanCagri){
+		return this.performansService.updateYenidenAcilanCagriPuaniYcs(yenidenAcilanCagri);
 	}
 	
 	@GetMapping("/getCcsYcsYpdEkipPersonal")
 	public List<EkipPersonalCcsYcsYpd> getCcsYcsYpdEkipPersonal(@RequestParam Long hafta1, @RequestParam Long hafta2, @RequestParam String ekip){
 		return this.performansService.getCcsYcsYpdEkipPersonal(hafta1, hafta2, ekip);
+	}
+	
+	@GetMapping("/allPerformansByHafta")
+	public List<PerformansEntity> getAllPerformansByHafta(@RequestParam Integer hafta){
+		return this.performansService.getAllPerformansByHafta(hafta);
 	}
 
 }
