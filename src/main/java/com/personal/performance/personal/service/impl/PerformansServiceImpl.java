@@ -110,6 +110,7 @@ public class PerformansServiceImpl implements PerformansService{
 	
 	@Override
 	public List<EkipPersonalCcsYcsYpd> getCcsYcsYpdEkipPersonal(Long hafta1, Long hafta2, String ekip) {
+		this.performansRepository.findB
 		return null;
 	}
 	
