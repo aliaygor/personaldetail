@@ -18,7 +18,7 @@ public interface PerformansService {
 	
 	public PerformansEntity savePerformans(PerformansEntity performansEntity);
 	
-	public void updateBakilanCagriTamCcs(Integer haftaId);
+	public List<PerformansEntity> updateBakilanCagriTamCcs(Integer haftaId);
 	
 	public void updateYoneticiPuaniYpd(List<PerformansYoneticiPuaniDto> performansYoneticiPuaniList);
 	

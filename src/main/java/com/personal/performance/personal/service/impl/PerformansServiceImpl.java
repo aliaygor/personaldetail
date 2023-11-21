@@ -44,7 +44,7 @@ public class PerformansServiceImpl implements PerformansService{
 	}
 	
 	@Override
-	public void updateBakilanCagriTamCcs(Integer haftaId) {
+	public List<PerformansEntity> updateBakilanCagriTamCcs(Integer haftaId) {
 		
 		Optional<HaftalarEntity> haftaEntity = this.haftalarRepository.findById(Long.valueOf(haftaId));
 		List<PerformansEntity> performanList = this.performansRepository.findPerformansByHaftaSira(haftaId);
@@ -65,6 +65,8 @@ public class PerformansServiceImpl implements PerformansService{
 				this.performansRepository.save(performans);
 			});
 		}
+		
+		return this.performansRepository.findPerformansByHaftaSira(haftaId);
 	}
 
 	@Override

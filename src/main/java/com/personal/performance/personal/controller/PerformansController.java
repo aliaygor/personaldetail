@@ -45,8 +45,8 @@ public class PerformansController {
 	}
 	
 	@PostMapping("/updateBakilanCagriTamCcs")
-	public void updatePerformans(@RequestParam Integer haftaId){
-		this.performansService.updateBakilanCagriTamCcs(haftaId);
+	public List<PerformansEntity> updatePerformans(@RequestParam Integer haftaId){
+		return this.performansService.updateBakilanCagriTamCcs(haftaId);
 	}
 	
 	@PostMapping("/updateYoneticiPuaniYpd")
