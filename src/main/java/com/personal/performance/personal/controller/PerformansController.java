@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.personal.performance.personal.dto.EkipPersonalCcsYcsYpd;
 import com.personal.performance.personal.dto.PerformansYoneticiPuaniDto;
 import com.personal.performance.personal.dto.YenidenAcilanCagriDto;
 import com.personal.performance.personal.entity.PerformansEntity;
@@ -56,6 +57,11 @@ public class PerformansController {
 	@PostMapping("/updateYenidenAcilanCagriPuaniYcs")
 	public void updateYenidenAcilanCagriPuaniYcs(@RequestBody YenidenAcilanCagriDto yenidenAcilanCagri){
 		this.performansService.updateYenidenAcilanCagriPuaniYcs(yenidenAcilanCagri);
+	}
+	
+	@GetMapping("/getCcsYcsYpdEkipPersonal")
+	public List<EkipPersonalCcsYcsYpd> getCcsYcsYpdEkipPersonal(@RequestParam Long hafta1, @RequestParam Long hafta2, @RequestParam String ekip){
+		return this.performansService.getCcsYcsYpdEkipPersonal(hafta1, hafta2, ekip);
 	}
 
 }

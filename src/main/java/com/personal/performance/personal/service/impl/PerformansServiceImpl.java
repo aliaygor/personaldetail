@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.personal.performance.personal.dto.EkipPersonalCcsYcsYpd;
 import com.personal.performance.personal.dto.PerformansYoneticiPuaniDto;
 import com.personal.performance.personal.dto.YenidenAcilanCagriDto;
 import com.personal.performance.personal.entity.HaftalarEntity;
@@ -105,6 +106,11 @@ public class PerformansServiceImpl implements PerformansService{
 				performans.setYcsPuani(ycsPuani);
 			});
 		}
+	}
+	
+	@Override
+	public List<EkipPersonalCcsYcsYpd> getCcsYcsYpdEkipPersonal(Long hafta1, Long hafta2, String ekip) {
+		return null;
 	}
 	
 }
