@@ -4,13 +4,19 @@ import java.util.List;
 
 public class EkipPersonalCcsYcsYpd {
 	
-	private String ekipId;
+	private Integer ekipId;
 	private List<PersonalCcsYcsYpd> personalCcsYcsYpd;
 	
-	public String getEkipId() {
+	public EkipPersonalCcsYcsYpd(Integer ekipId, List<PersonalCcsYcsYpd> personalCcsYcsYpd) {
+		super();
+		this.ekipId = ekipId;
+		this.personalCcsYcsYpd = personalCcsYcsYpd;
+	}
+	
+	public Integer getEkipId() {
 		return ekipId;
 	}
-	public void setEkipId(String ekipId) {
+	public void setEkipId(Integer ekipId) {
 		this.ekipId = ekipId;
 	}
 	public List<PersonalCcsYcsYpd> getPersonalCcsYcsYpd() {

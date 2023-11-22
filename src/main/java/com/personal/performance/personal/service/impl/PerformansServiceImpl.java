@@ -1,12 +1,15 @@
 package com.personal.performance.personal.service.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.personal.performance.personal.dto.EkipPersonalCcsYcsYpd;
 import com.personal.performance.personal.dto.PerformansYoneticiPuaniDto;
 import com.personal.performance.personal.dto.YenidenAcilanCagriDto;
 import com.personal.performance.personal.entity.HaftalarEntity;
@@ -73,18 +76,17 @@ public class PerformansServiceImpl implements PerformansService{
 	public List<PerformansEntity> updateYoneticiPuaniYpd(List<PerformansYoneticiPuaniDto> performansYoneticiPuaniList) {
 		performansYoneticiPuaniList.stream().forEach(yoneticiPuani -> {
 			PerformansEntity performansEntity = this.performansRepository.findPerformansByPersonelIdAndHaftaSira(yoneticiPuani.getPersonalId(), yoneticiPuani.getHaftaId());
-			performansEntity.setYoneticiPuani(yoneticiPuani.getYoneticiPuani());
-			
-			Long ypdPuani = (yoneticiPuani.getAgirlik() * yoneticiPuani.getYoneticiPuani()) + 
-					((100 - yoneticiPuani.getAgirlik())*performansEntity.getCcsPuani()) / 100;
-			
-			performansEntity.setYpdPuani(ypdPuani);
-			
-			this.performansRepository.save(performansEntity);
+			if(Objects.nonNull(performansEntity)) {
+				performansEntity.setYoneticiPuani(yoneticiPuani.getYoneticiPuani());
+				
+				Long ypdPuani = (yoneticiPuani.getAgirlik() * yoneticiPuani.getYoneticiPuani()) +  ((100 - yoneticiPuani.getAgirlik())*performansEntity.getCcsPuani()) / 100;
+				
+				performansEntity.setYpdPuani(ypdPuani);
+				
+				this.performansRepository.save(performansEntity);
+			}
 		}); 
-		
 		return this.performansRepository.findPerformansByHaftaSira(performansYoneticiPuaniList.get(0).getHaftaId().intValue());
-
 	}
 
 	@Override
@@ -117,9 +119,21 @@ public class PerformansServiceImpl implements PerformansService{
 	}
 	
 	@Override
-	public List<EkipPersonalCcsYcsYpd> getCcsYcsYpdEkipPersonal(Long hafta1, Long hafta2, String ekip) {
-		//this.performansRepository.findB
-		return null;
+	public Map<Integer, List<PerformansEntity>> getCcsYcsYpdEkipPersonal(Integer hafta1, Integer hafta2, String ekip) {
+		List<PerformansEntity> performansList = new ArrayList<>();
+		if("all".equals(ekip)) {
+			performansList = this.performansRepository.findByPerformansByHaftaSira(hafta1, hafta2);
+		}else {
+			performansList = this.performansRepository.findByPerformansByHaftaSiraAndEkipId(hafta1, hafta2, Integer.valueOf(ekip));
+		}
+		
+		Map<Integer, List<PerformansEntity>> groupedByEkipId = new HashMap<>();
+		if(performansList != null && !performansList.isEmpty()) {
+	        for (PerformansEntity performans : performansList) {
+	            groupedByEkipId.computeIfAbsent(performans.getEkipId(), k -> new ArrayList<>()).add(performans);
+	        }
+		}
+		return groupedByEkipId;
 	}
 	
 	@Override

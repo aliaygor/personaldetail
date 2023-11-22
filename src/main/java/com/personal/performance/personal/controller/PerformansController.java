@@ -1,6 +1,7 @@
 package com.personal.performance.personal.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.personal.performance.personal.dto.EkipPersonalCcsYcsYpd;
 import com.personal.performance.personal.dto.PerformansYoneticiPuaniDto;
 import com.personal.performance.personal.dto.YenidenAcilanCagriDto;
 import com.personal.performance.personal.entity.PerformansEntity;
@@ -60,7 +60,7 @@ public class PerformansController {
 	}
 	
 	@GetMapping("/getCcsYcsYpdEkipPersonal")
-	public List<EkipPersonalCcsYcsYpd> getCcsYcsYpdEkipPersonal(@RequestParam Long hafta1, @RequestParam Long hafta2, @RequestParam String ekip){
+	public Map<Integer, List<PerformansEntity>> getCcsYcsYpdEkipPersonal(@RequestParam Integer hafta1, @RequestParam Integer hafta2, @RequestParam String ekip){
 		return this.performansService.getCcsYcsYpdEkipPersonal(hafta1, hafta2, ekip);
 	}
 	

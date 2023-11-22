@@ -1,9 +1,9 @@
 package com.personal.performance.personal.service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-import com.personal.performance.personal.dto.EkipPersonalCcsYcsYpd;
 import com.personal.performance.personal.dto.PerformansYoneticiPuaniDto;
 import com.personal.performance.personal.dto.YenidenAcilanCagriDto;
 import com.personal.performance.personal.entity.PerformansEntity;
@@ -24,7 +24,7 @@ public interface PerformansService {
 	
 	public List<PerformansEntity> updateYenidenAcilanCagriPuaniYcs(YenidenAcilanCagriDto yenidenAcilanCagriDto);
 	
-	public List<EkipPersonalCcsYcsYpd> getCcsYcsYpdEkipPersonal(Long hafta1, Long hafta2, String ekip);
+	public Map<Integer, List<PerformansEntity>> getCcsYcsYpdEkipPersonal(Integer hafta1, Integer hafta2, String ekip);
 	
 	public List<PerformansEntity> getAllPerformansByHafta(Integer hafta);
 

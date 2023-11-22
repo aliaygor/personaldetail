@@ -2,14 +2,14 @@ package com.personal.performance.personal.dto;
 
 public class PersonalCcsYcsYpd {
 	
-	private Long personelId;
+	private Integer personelId;
 	private Double ccsPuani;
 	private Double ycsPuani;
 	private Double ypdPuani;
-	public Long getPersonelId() {
+	public Integer getPersonelId() {
 		return personelId;
 	}
-	public void setPersonelId(Long personelId) {
+	public void setPersonelId(Integer personelId) {
 		this.personelId = personelId;
 	}
 	public Double getCcsPuani() {
