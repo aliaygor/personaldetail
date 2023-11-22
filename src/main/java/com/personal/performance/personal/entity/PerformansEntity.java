@@ -1,5 +1,7 @@
 package com.personal.performance.personal.entity;
 
+import java.math.BigDecimal;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -64,6 +66,24 @@ public class PerformansEntity {
     @ManyToOne
     @JoinColumn(name = "hafta_sira", insertable = false, updatable = false)
     private HaftalarEntity haftalar;
+    
+    
+    
+    public PerformansEntity() {
+    }
+
+	public PerformansEntity(Integer kisiCalismaSaati, Integer yenidenAcilanCagri, HaftalarEntity haftalar) {
+		this.kisiCalismaSaati = kisiCalismaSaati;
+		this.yenidenAcilanCagri = yenidenAcilanCagri;
+		this.haftalar = haftalar;
+	}
+
+	public BigDecimal calculateCagriTam() {
+        BigDecimal cagriTam = BigDecimal.valueOf(haftalar.getCalisma_saati())
+                .multiply(BigDecimal.valueOf(yenidenAcilanCagri))
+                .divide(BigDecimal.valueOf(kisiCalismaSaati), 2, BigDecimal.ROUND_HALF_UP);
+        return cagriTam;
+    }
 
 	public Integer getPerformansId() {
 		return performansId;

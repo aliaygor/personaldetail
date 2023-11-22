@@ -1,5 +1,6 @@
 package com.personal.performance.personal.service.impl;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -88,29 +89,43 @@ public class PerformansServiceImpl implements PerformansService{
 		}); 
 		return this.performansRepository.findPerformansByHaftaSira(performansYoneticiPuaniList.get(0).getHaftaId().intValue());
 	}
-
+	
 	@Override
 	public List<PerformansEntity> updateYenidenAcilanCagriPuaniYcs(YenidenAcilanCagriDto yenidenAcilanCagriDto) {
 
 		Optional<HaftalarEntity> haftaEntity = this.haftalarRepository.findById(Long.valueOf(yenidenAcilanCagriDto.getHaftaId()));
 		List<PerformansEntity> performansEntityList = this.performansRepository.findPerformansByHaftaSira(yenidenAcilanCagriDto.getHaftaId());
 		
-		Integer minYenidenAcilanCagriTam = this.performansRepository.findFirstByOrderByYenidenAcilanCagriTamAsc().getBakilanCagriTam();
-		Integer maxYenidenAcilanCagriTam = this.performansRepository.findFirstByOrderByYenidenAcilanCagriTamDesc().getBakilanCagriTam();
-		
+		BigDecimal minYenidenAcilanCagriTam = performansEntityList.stream()
+                .map(PerformansEntity::calculateCagriTam)
+                .min(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
+        BigDecimal maxYenidenAcilanCagriTam = performansEntityList.stream()
+                .map(PerformansEntity::calculateCagriTam)
+                .max(BigDecimal::compareTo)
+                .orElse(BigDecimal.ZERO);
+
 		if(performansEntityList != null && !performansEntityList.isEmpty()) {
 			performansEntityList.stream().forEach(performans -> {
-				Integer yenidenAcilanCagriTam = (haftaEntity.get().getCalisma_saati() * performans.getYenidenAcilanCagri()) / performans.getKisiCalismaSaati();
-				Integer yenidenAcilanCagriPuani = (((yenidenAcilanCagriTam - minYenidenAcilanCagriTam) / (maxYenidenAcilanCagriTam - minYenidenAcilanCagriTam))*(-25)) + 75; 
-			
-				performans.setYenidenAcilanCagriTam(maxYenidenAcilanCagriTam);
-				performans.setYenidenAcilanCagriPuani(Long.valueOf(yenidenAcilanCagriPuani));
+				Integer yenidenAcilanCagriTam = (haftaEntity.get().getCalisma_saati() * performans.getYenidenAcilanCagri()) / performans.getKisiCalismaSaati();			
 				
-				Long ycsPuani = (yenidenAcilanCagriDto.getYenidenAcilanPuan() * yenidenAcilanCagriPuani) +
+				BigDecimal yenidenAcilanCagriPuani = (((BigDecimal.valueOf(yenidenAcilanCagriTam)
+				        .subtract(minYenidenAcilanCagriTam))
+				        .divide(maxYenidenAcilanCagriTam.subtract(minYenidenAcilanCagriTam), 2, BigDecimal.ROUND_HALF_UP))
+				        .multiply(new BigDecimal(-25)))
+				        .add(new BigDecimal(75));				
+				
+				performans.setYenidenAcilanCagriTam(yenidenAcilanCagriTam);
+				performans.setYenidenAcilanCagriPuani(yenidenAcilanCagriPuani.longValue());
+				
+				Long ycsPuani = (yenidenAcilanCagriDto.getYenidenAcilanPuan() * yenidenAcilanCagriPuani.intValue()) +
 						(yenidenAcilanCagriDto.getYoneticiPuan() * performans.getYoneticiPuani().intValue()) + 
 						((100 - yenidenAcilanCagriDto.getYenidenAcilanPuan() - yenidenAcilanCagriDto.getYoneticiPuan()) * performans.getCcsPuani())/100;
 								
 				performans.setYcsPuani(ycsPuani);
+				
+				this.performansRepository.save(performans);
 			});
 		}
 		
