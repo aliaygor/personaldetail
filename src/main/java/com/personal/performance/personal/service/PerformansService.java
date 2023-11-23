@@ -27,5 +27,7 @@ public interface PerformansService {
 	public Map<Integer, List<PerformansEntity>> getCcsYcsYpdEkipPersonal(Integer hafta1, Integer hafta2, String ekip);
 	
 	public List<PerformansEntity> getAllPerformansByHafta(Integer hafta);
+	
+	public List<PerformansEntity> getPersonalByHaftalar(Integer hafta1, Integer hafta2, Integer personelId);
 
 }

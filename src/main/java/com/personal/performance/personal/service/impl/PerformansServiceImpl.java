@@ -191,4 +191,9 @@ public class PerformansServiceImpl implements PerformansService{
 		return this.performansRepository.findPerformansByHaftaSira(hafta);
 	}
 	
+	@Override
+	public List<PerformansEntity> getPersonalByHaftalar(Integer hafta1, Integer hafta2, Integer personelId) {
+		return this.performansRepository.findByPerformansByHaftaSiraAndPersonelId(hafta1, hafta2, personelId);
+	}
+	
 }
