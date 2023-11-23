@@ -84,6 +84,13 @@ public class PerformansEntity {
                 .divide(BigDecimal.valueOf(kisiCalismaSaati), 2, BigDecimal.ROUND_HALF_UP);
         return cagriTam;
     }
+	
+	public BigDecimal calculateBakilanCagriTam() {
+        BigDecimal cagriTam = BigDecimal.valueOf(haftalar.getCalisma_saati())
+                .multiply(BigDecimal.valueOf(bakilanCagri))
+                .divide(BigDecimal.valueOf(kisiCalismaSaati), 2, BigDecimal.ROUND_HALF_UP);
+        return cagriTam;
+    }
 
 	public Integer getPerformansId() {
 		return performansId;

@@ -51,21 +51,35 @@ public class PerformansServiceImpl implements PerformansService{
 	public List<PerformansEntity> updateBakilanCagriTamCcs(Integer haftaId) {
 		
 		Optional<HaftalarEntity> haftaEntity = this.haftalarRepository.findById(Long.valueOf(haftaId));
-		List<PerformansEntity> performanList = this.performansRepository.findPerformansByHaftaSira(haftaId);
+		List<PerformansEntity> performansEntityList = this.performansRepository.findPerformansByHaftaSira(haftaId);
 		
-		if(performanList != null && !performanList.isEmpty()) {
-			performanList.stream().forEach(performans -> {
+		if(performansEntityList != null && !performansEntityList.isEmpty()) {
+			performansEntityList.stream().forEach(performans -> {
 			Integer	bakilanCagriTam = (haftaEntity.get().getCalisma_saati() * performans.getBakilanCagri()) / performans.getKisiCalismaSaati();
 			performans.setBakilanCagriTam(bakilanCagriTam);
 			this.performansRepository.save(performans);
 			});
 			
-			Integer minBakilanCagriTam = this.performansRepository.findFirstByOrderByBakilanCagriTamAsc().getBakilanCagriTam();
-			Integer maxBakilanCagriTam = this.performansRepository.findFirstByOrderByBakilanCagriTamDesc().getBakilanCagriTam();
+			BigDecimal minBakilanCagriTam = performansEntityList.stream()
+	                .map(PerformansEntity::calculateBakilanCagriTam)
+	                .min(BigDecimal::compareTo)
+	                .orElse(BigDecimal.ZERO);
 
-			performanList.stream().forEach(performans -> {
-				Long ccsPuani = Long.valueOf((performans.getBakilanCagriTam() - minBakilanCagriTam) / (maxBakilanCagriTam - minBakilanCagriTam) * 25 + 75);
-				performans.setCcsPuani(ccsPuani);
+	        BigDecimal maxBakilanCagriTam = performansEntityList.stream()
+	                .map(PerformansEntity::calculateBakilanCagriTam)
+	                .max(BigDecimal::compareTo)
+	                .orElse(BigDecimal.ZERO);
+
+	        performansEntityList.stream().forEach(performans -> {
+				//Long ccsPuani = Long.valueOf(((performans.getBakilanCagriTam() - minBakilanCagriTam.longValue()) / (maxBakilanCagriTam.longValue() - minBakilanCagriTam.longValue())) * 25 + 75);
+				BigDecimal ccsPuani = new BigDecimal(performans.getBakilanCagriTam())
+				        .subtract(minBakilanCagriTam)
+				        .divide(maxBakilanCagriTam.subtract(minBakilanCagriTam), 10, BigDecimal.ROUND_HALF_UP)
+				        .multiply(new BigDecimal("-25"))
+				        .add(new BigDecimal("75"))
+				        .setScale(0, BigDecimal.ROUND_HALF_UP);
+
+				performans.setCcsPuani(ccsPuani.longValue());
 				this.performansRepository.save(performans);
 			});
 		}
@@ -80,9 +94,18 @@ public class PerformansServiceImpl implements PerformansService{
 			if(Objects.nonNull(performansEntity)) {
 				performansEntity.setYoneticiPuani(yoneticiPuani.getYoneticiPuani());
 				
-				Long ypdPuani = (yoneticiPuani.getAgirlik() * yoneticiPuani.getYoneticiPuani()) +  ((100 - yoneticiPuani.getAgirlik())*performansEntity.getCcsPuani()) / 100;
+				//Long ypdPuani = (yoneticiPuani.getAgirlik() * yoneticiPuani.getYoneticiPuani()) +  ((100 - yoneticiPuani.getAgirlik())*performansEntity.getCcsPuani()) / 100;
 				
-				performansEntity.setYpdPuani(ypdPuani);
+				BigDecimal agirlik = new BigDecimal(yoneticiPuani.getAgirlik());
+				BigDecimal yoneticiPuaniDegeri = new BigDecimal(yoneticiPuani.getYoneticiPuani());
+				BigDecimal ccsPuani = new BigDecimal(performansEntity.getCcsPuani());
+
+				BigDecimal ypdPuani = agirlik.multiply(yoneticiPuaniDegeri)
+				        .add(new BigDecimal(100).subtract(agirlik)
+				                .multiply(ccsPuani).divide(new BigDecimal(100), 10, BigDecimal.ROUND_HALF_UP))
+				        .setScale(0, BigDecimal.ROUND_HALF_UP);
+				
+				performansEntity.setYpdPuani(ypdPuani.longValue());
 				
 				this.performansRepository.save(performansEntity);
 			}
@@ -119,11 +142,23 @@ public class PerformansServiceImpl implements PerformansService{
 				performans.setYenidenAcilanCagriTam(yenidenAcilanCagriTam);
 				performans.setYenidenAcilanCagriPuani(yenidenAcilanCagriPuani.longValue());
 				
-				Long ycsPuani = (yenidenAcilanCagriDto.getYenidenAcilanPuan() * yenidenAcilanCagriPuani.intValue()) +
-						(yenidenAcilanCagriDto.getYoneticiPuan() * performans.getYoneticiPuani().intValue()) + 
-						((100 - yenidenAcilanCagriDto.getYenidenAcilanPuan() - yenidenAcilanCagriDto.getYoneticiPuan()) * performans.getCcsPuani())/100;
+//				Long ycsPuani = (yenidenAcilanCagriDto.getYenidenAcilanPuan() * yenidenAcilanCagriPuani.intValue()) + 
+//						(yenidenAcilanCagriDto.getYoneticiPuan() * performans.getYoneticiPuani().intValue()) + 
+//						((100 - yenidenAcilanCagriDto.getYenidenAcilanPuan() - yenidenAcilanCagriDto.getYoneticiPuan()) * performans.getCcsPuani())/100;
+//				
+				BigDecimal yenidenAcilanPuan = new BigDecimal(yenidenAcilanCagriDto.getYenidenAcilanPuan());
+				BigDecimal yenidenAcilanCagriPuaniBigDecimal = new BigDecimal(yenidenAcilanCagriPuani.intValue());
+				BigDecimal yoneticiPuan = new BigDecimal(yenidenAcilanCagriDto.getYoneticiPuan());
+				BigDecimal performansYoneticiPuani = new BigDecimal(performans.getYoneticiPuani().intValue());
+				BigDecimal ccsPuani = new BigDecimal(performans.getCcsPuani());
+
+				BigDecimal ycsPuani = yenidenAcilanPuan.multiply(yenidenAcilanCagriPuaniBigDecimal)
+				        .add(yoneticiPuan.multiply(performansYoneticiPuani))
+				        .add(new BigDecimal(100).subtract(yenidenAcilanPuan.add(yoneticiPuan))
+				                .multiply(ccsPuani).divide(new BigDecimal(100), 10, BigDecimal.ROUND_HALF_UP))
+				        .setScale(0, BigDecimal.ROUND_HALF_UP);
 								
-				performans.setYcsPuani(ycsPuani);
+				performans.setYcsPuani(ycsPuani.longValue());
 				
 				this.performansRepository.save(performans);
 			});
