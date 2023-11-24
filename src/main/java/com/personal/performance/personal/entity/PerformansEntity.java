@@ -78,7 +78,7 @@ public class PerformansEntity {
 		this.haftalar = haftalar;
 	}
 
-	public BigDecimal calculateCagriTam() {
+	public BigDecimal calculateYenidenAcilanCagriTam() {
         BigDecimal cagriTam = BigDecimal.valueOf(haftalar.getCalisma_saati())
                 .multiply(BigDecimal.valueOf(yenidenAcilanCagri))
                 .divide(BigDecimal.valueOf(kisiCalismaSaati), 2, BigDecimal.ROUND_HALF_UP);

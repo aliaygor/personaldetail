@@ -120,12 +120,12 @@ public class PerformansServiceImpl implements PerformansService{
 		List<PerformansEntity> performansEntityList = this.performansRepository.findPerformansByHaftaSira(yenidenAcilanCagriDto.getHaftaId());
 		
 		BigDecimal minYenidenAcilanCagriTam = performansEntityList.stream()
-                .map(PerformansEntity::calculateCagriTam)
+                .map(PerformansEntity::calculateYenidenAcilanCagriTam)
                 .min(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
 
         BigDecimal maxYenidenAcilanCagriTam = performansEntityList.stream()
-                .map(PerformansEntity::calculateCagriTam)
+                .map(PerformansEntity::calculateYenidenAcilanCagriTam)
                 .max(BigDecimal::compareTo)
                 .orElse(BigDecimal.ZERO);
 
@@ -188,6 +188,32 @@ public class PerformansServiceImpl implements PerformansService{
 	@Override
 	public List<PerformansEntity> getPersonalByHaftalar(Integer hafta1, Integer hafta2, Integer personelId) {
 		return this.performansRepository.findByPerformansByHaftaSiraAndPersonelId(hafta1, hafta2, personelId);
+	}
+	
+	@Override
+	public List<Map<String, Double>> getPersonalCagriSayiSureTahmin(Integer personelId) {
+		
+		List<Map<String, Double>> tahminiCagriMapList = new ArrayList<>();
+		Map<String, Double> tahminCagriSayiMap = new HashMap<>();
+		Map<String, Double> tahminCagriSureMap = new HashMap<>();
+
+		List<PerformansEntity> performansList = this.performansRepository.findPerformansByPersonelId(personelId);
+		
+		Integer maxHaftaSira = performansList.stream().map(PerformansEntity::getHaftaSira).max(Integer::compareTo).orElse(null);
+		Double averageBakilanCagriTam = performansList.stream().filter(performans -> performans.getBakilanCagri() != null).mapToDouble(PerformansEntity::getBakilanCagri).average().orElse(Double.NaN);
+		Double averageYenidenAcilanCagriTam = performansList.stream().filter(performans -> performans.getYenidenAcilanCagri() != null).mapToDouble(PerformansEntity::getYenidenAcilanCagri).average().orElse(Double.NaN);
+		Double tahminCagriSayi = (averageBakilanCagriTam - averageYenidenAcilanCagriTam) / maxHaftaSira;
+		
+		tahminCagriSayiMap.put("Tahmini Çözülen Çağrı Sayısı", Double.valueOf(Math.round(tahminCagriSayi * 100) / 100));
+		tahminiCagriMapList.add(tahminCagriSayiMap);
+		
+		Double averageKisiCalismaSaati = performansList.stream().filter(performans -> performans.getKisiCalismaSaati() != null).mapToDouble(PerformansEntity::getKisiCalismaSaati).average().orElse(Double.NaN);
+		Double tahminCagriSure = ((averageBakilanCagriTam - averageYenidenAcilanCagriTam) * averageKisiCalismaSaati) / (averageBakilanCagriTam - averageYenidenAcilanCagriTam);
+		
+		tahminCagriSureMap.put("Tahmini Çözülen Çağrı Süre", tahminCagriSure);
+		tahminiCagriMapList.add(tahminCagriSureMap);
+	
+		return tahminiCagriMapList;
 	}
 	
 }

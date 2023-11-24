@@ -74,4 +74,8 @@ public class PerformansController {
 		return this.performansService.getPersonalByHaftalar(hafta1, hafta2, personelId);
 	}
 
+	@GetMapping("/getPersonalCagriSayiSureTahmin")
+	public List<Map<String, Double>> getPersonalCagriSayiSureTahmin(@RequestParam Integer personelId){
+		return this.performansService.getPersonalCagriSayiSureTahmin(personelId);
+	}
 }
