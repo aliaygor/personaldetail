@@ -141,23 +141,17 @@ public class PerformansServiceImpl implements PerformansService{
 				
 				performans.setYenidenAcilanCagriTam(yenidenAcilanCagriTam);
 				performans.setYenidenAcilanCagriPuani(yenidenAcilanCagriPuani.longValue());
-				
-//				Long ycsPuani = (yenidenAcilanCagriDto.getYenidenAcilanPuan() * yenidenAcilanCagriPuani.intValue()) + 
-//						(yenidenAcilanCagriDto.getYoneticiPuan() * performans.getYoneticiPuani().intValue()) + 
-//						((100 - yenidenAcilanCagriDto.getYenidenAcilanPuan() - yenidenAcilanCagriDto.getYoneticiPuan()) * performans.getCcsPuani())/100;
-//				
+
 				BigDecimal yenidenAcilanPuan = new BigDecimal(yenidenAcilanCagriDto.getYenidenAcilanPuan());
 				BigDecimal yenidenAcilanCagriPuaniBigDecimal = new BigDecimal(yenidenAcilanCagriPuani.intValue());
 				BigDecimal yoneticiPuan = new BigDecimal(yenidenAcilanCagriDto.getYoneticiPuan());
 				BigDecimal performansYoneticiPuani = new BigDecimal(performans.getYoneticiPuani().intValue());
 				BigDecimal ccsPuani = new BigDecimal(performans.getCcsPuani());
 
-				BigDecimal ycsPuani = yenidenAcilanPuan.multiply(yenidenAcilanCagriPuaniBigDecimal)
-				        .add(yoneticiPuan.multiply(performansYoneticiPuani))
-				        .add(new BigDecimal(100).subtract(yenidenAcilanPuan.add(yoneticiPuan))
-				                .multiply(ccsPuani).divide(new BigDecimal(100), 10, BigDecimal.ROUND_HALF_UP))
-				        .setScale(0, BigDecimal.ROUND_HALF_UP);
-								
+				BigDecimal ycsPuani = ((yenidenAcilanPuan.multiply(yenidenAcilanCagriPuaniBigDecimal))
+						.add(yoneticiPuan.multiply(performansYoneticiPuani))
+						.add((new BigDecimal(100).subtract(yenidenAcilanPuan).subtract(yoneticiPuan)).multiply(ccsPuani)))
+						.divide(new BigDecimal(100), 10, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
 				performans.setYcsPuani(ycsPuani.longValue());
 				
 				this.performansRepository.save(performans);
