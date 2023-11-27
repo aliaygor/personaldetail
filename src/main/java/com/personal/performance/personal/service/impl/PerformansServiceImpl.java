@@ -118,16 +118,20 @@ public class PerformansServiceImpl implements PerformansService{
                 .orElse(BigDecimal.ZERO);
 
 		if(performansEntityList != null && !performansEntityList.isEmpty()) {
-			performansEntityList.stream().forEach(performansEntity -> {
-				Integer yenidenAcilanCagriTam = (haftaEntity.get().getCalisma_saati() * performansEntity.getYenidenAcilanCagri()) / performansEntity.getKisiCalismaSaati();			
-				
-				BigDecimal yenidenAcilanCagriPuani = (((BigDecimal.valueOf(yenidenAcilanCagriTam)
+			performansEntityList.stream().forEach(performansEntity -> {				
+				BigDecimal calismaSaati = new BigDecimal(haftaEntity.get().getCalisma_saati());
+				BigDecimal yenidenAcilanCagri = new BigDecimal(performansEntity.getYenidenAcilanCagri());
+				BigDecimal kisiCalismaSaati = new BigDecimal(performansEntity.getKisiCalismaSaati());
+
+				BigDecimal yenidenAcilanCagriTam = (calismaSaati.multiply(yenidenAcilanCagri)).divide(kisiCalismaSaati, 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP); // İsterseniz ROUND_HALF_UP'u değiştirebilirsiniz
+
+				BigDecimal yenidenAcilanCagriPuani = (((yenidenAcilanCagriTam
 				        .subtract(minYenidenAcilanCagriTam))
 				        .divide(maxYenidenAcilanCagriTam.subtract(minYenidenAcilanCagriTam), 2, BigDecimal.ROUND_HALF_UP))
 				        .multiply(new BigDecimal(-25)))
 				        .add(new BigDecimal(75)).setScale(0, BigDecimal.ROUND_HALF_UP);;				
 				
-				performansEntity.setYenidenAcilanCagriTam(yenidenAcilanCagriTam);
+				performansEntity.setYenidenAcilanCagriTam(yenidenAcilanCagriTam.intValue());
 				performansEntity.setYenidenAcilanCagriPuani(yenidenAcilanCagriPuani.longValue());
 
 				BigDecimal yenidenAcilanPuan = new BigDecimal(yenidenAcilanCagriDto.getYenidenAcilanPuan());
