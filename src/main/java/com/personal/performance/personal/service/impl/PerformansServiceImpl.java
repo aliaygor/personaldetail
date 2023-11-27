@@ -131,11 +131,10 @@ public class PerformansServiceImpl implements PerformansService{
 
 				BigDecimal yenidenAcilanCagriTam = (calismaSaati.multiply(yenidenAcilanCagri)).divide(kisiCalismaSaati, 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
 
-				BigDecimal yenidenAcilanCagriPuani = (((yenidenAcilanCagriTam
-				        .subtract(minYenidenAcilanCagriTam))
+				BigDecimal yenidenAcilanCagriPuani = (((yenidenAcilanCagriTam.subtract(minYenidenAcilanCagriTam))
 				        .divide(maxYenidenAcilanCagriTam.subtract(minYenidenAcilanCagriTam), 2, BigDecimal.ROUND_HALF_UP))
 				        .multiply(new BigDecimal(-25)))
-				        .add(new BigDecimal(75)).setScale(0, BigDecimal.ROUND_HALF_UP);;				
+				        .add(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_HALF_UP);				
 				
 				performansEntity.setYenidenAcilanCagriTam(yenidenAcilanCagriTam.intValue());
 				performansEntity.setYenidenAcilanCagriPuani(yenidenAcilanCagriPuani.longValue());
