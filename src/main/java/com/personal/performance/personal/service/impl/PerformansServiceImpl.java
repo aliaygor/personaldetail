@@ -55,8 +55,14 @@ public class PerformansServiceImpl implements PerformansService{
 		
 		if(performansEntityList != null && !performansEntityList.isEmpty()) {
 			performansEntityList.stream().forEach(performans -> {
-			Integer	bakilanCagriTam = (haftaEntity.get().getCalisma_saati() * performans.getBakilanCagri()) / performans.getKisiCalismaSaati();
-			performans.setBakilanCagriTam(bakilanCagriTam);
+			
+			BigDecimal calismaSaati = new BigDecimal(haftaEntity.get().getCalisma_saati());
+			BigDecimal bakilanCagri = new BigDecimal(performans.getBakilanCagri());
+			BigDecimal kisiCalismaSaati = new BigDecimal(performans.getKisiCalismaSaati());
+
+			BigDecimal bakilanCagriTam = (calismaSaati.multiply(bakilanCagri)).divide(kisiCalismaSaati, 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
+			
+			performans.setBakilanCagriTam(bakilanCagriTam.intValue());
 			this.performansRepository.save(performans);
 			});
 			
@@ -123,7 +129,7 @@ public class PerformansServiceImpl implements PerformansService{
 				BigDecimal yenidenAcilanCagri = new BigDecimal(performansEntity.getYenidenAcilanCagri());
 				BigDecimal kisiCalismaSaati = new BigDecimal(performansEntity.getKisiCalismaSaati());
 
-				BigDecimal yenidenAcilanCagriTam = (calismaSaati.multiply(yenidenAcilanCagri)).divide(kisiCalismaSaati, 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP); // İsterseniz ROUND_HALF_UP'u değiştirebilirsiniz
+				BigDecimal yenidenAcilanCagriTam = (calismaSaati.multiply(yenidenAcilanCagri)).divide(kisiCalismaSaati, 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
 
 				BigDecimal yenidenAcilanCagriPuani = (((yenidenAcilanCagriTam
 				        .subtract(minYenidenAcilanCagriTam))
