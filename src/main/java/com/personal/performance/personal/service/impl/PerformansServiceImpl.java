@@ -71,7 +71,7 @@ public class PerformansServiceImpl implements PerformansService{
 	                .orElse(BigDecimal.ZERO);
 
 	        performansEntityList.stream().forEach(performansEntity -> {
-	        	BigDecimal ccsPuani = (((new BigDecimal(performansEntity.getBakilanCagriTam()).subtract(minBakilanCagriTam)).divide(maxBakilanCagriTam.subtract(minBakilanCagriTam), 10, BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal("25"))).add(new BigDecimal("75"));
+	        	BigDecimal ccsPuani = (((new BigDecimal(performansEntity.getBakilanCagriTam()).subtract(minBakilanCagriTam)).divide(maxBakilanCagriTam.subtract(minBakilanCagriTam), 10, BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal("25"))).add(new BigDecimal("75")).setScale(0, BigDecimal.ROUND_HALF_UP);
 	        	performansEntity.setCcsPuani(ccsPuani.longValue());
 				this.performansRepository.save(performansEntity);
 			});
@@ -91,7 +91,7 @@ public class PerformansServiceImpl implements PerformansService{
 				BigDecimal yoneticiPuaniDegeri = new BigDecimal(yoneticiPuani.getYoneticiPuani());
 				BigDecimal ccsPuani = new BigDecimal(performansEntity.getCcsPuani());
 
-				BigDecimal ypdPuani = ((agirlik.multiply(yoneticiPuaniDegeri)).add((new BigDecimal(100).subtract(agirlik)).multiply(ccsPuani))).divide(new BigDecimal(100), 10, BigDecimal.ROUND_HALF_UP);
+				BigDecimal ypdPuani = ((agirlik.multiply(yoneticiPuaniDegeri)).add((new BigDecimal(100).subtract(agirlik)).multiply(ccsPuani))).divide(new BigDecimal(100), 10, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
 				
 				performansEntity.setYpdPuani(ypdPuani.longValue());
 				
@@ -125,7 +125,7 @@ public class PerformansServiceImpl implements PerformansService{
 				        .subtract(minYenidenAcilanCagriTam))
 				        .divide(maxYenidenAcilanCagriTam.subtract(minYenidenAcilanCagriTam), 2, BigDecimal.ROUND_HALF_UP))
 				        .multiply(new BigDecimal(-25)))
-				        .add(new BigDecimal(75));				
+				        .add(new BigDecimal(75)).setScale(0, BigDecimal.ROUND_HALF_UP);;				
 				
 				performansEntity.setYenidenAcilanCagriTam(yenidenAcilanCagriTam);
 				performansEntity.setYenidenAcilanCagriPuani(yenidenAcilanCagriPuani.longValue());
