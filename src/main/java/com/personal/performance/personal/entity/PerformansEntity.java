@@ -79,17 +79,29 @@ public class PerformansEntity {
 	}
 
 	public BigDecimal calculateYenidenAcilanCagriTam() {
-        BigDecimal cagriTam = BigDecimal.valueOf(haftalar.getCalisma_saati())
-                .multiply(BigDecimal.valueOf(yenidenAcilanCagri))
-                .divide(BigDecimal.valueOf(kisiCalismaSaati), 2, BigDecimal.ROUND_HALF_UP);
-        return cagriTam;
+//        BigDecimal yenidenAcilanCagriTam = BigDecimal.valueOf(haftalar.getCalisma_saati())
+//                .multiply(BigDecimal.valueOf(yenidenAcilanCagri))
+//                .divide(BigDecimal.valueOf(kisiCalismaSaati), 2, BigDecimal.ROUND_HALF_UP);
+		BigDecimal yenidenAcilanCagriTam = new BigDecimal(0);
+        if (!kisiCalismaSaati.equals(0) || !yenidenAcilanCagri.equals(0)) {
+        	yenidenAcilanCagriTam = BigDecimal.valueOf(haftalar.getCalisma_saati())
+                  .multiply(BigDecimal.valueOf(yenidenAcilanCagri))
+                  .divide(BigDecimal.valueOf(kisiCalismaSaati), 2, BigDecimal.ROUND_HALF_UP);
+        }
+        return yenidenAcilanCagriTam;
     }
 	
 	public BigDecimal calculateBakilanCagriTam() {
-        BigDecimal cagriTam = BigDecimal.valueOf(haftalar.getCalisma_saati())
-                .multiply(BigDecimal.valueOf(bakilanCagri))
-                .divide(BigDecimal.valueOf(kisiCalismaSaati), 2, BigDecimal.ROUND_HALF_UP);
-        return cagriTam;
+//        BigDecimal cagriTam = BigDecimal.valueOf(haftalar.getCalisma_saati())
+//                .multiply(BigDecimal.valueOf(bakilanCagri))
+//                .divide(BigDecimal.valueOf(kisiCalismaSaati), 2, BigDecimal.ROUND_HALF_UP);
+		BigDecimal bakilanCagriTam = new BigDecimal(0);
+        if (!kisiCalismaSaati.equals(0) || !bakilanCagri.equals(0)) {
+        	bakilanCagriTam = BigDecimal.valueOf(haftalar.getCalisma_saati())
+                    .multiply(BigDecimal.valueOf(bakilanCagri))
+                    .divide(BigDecimal.valueOf(kisiCalismaSaati), 2, BigDecimal.ROUND_HALF_UP);
+        }
+        return bakilanCagriTam;
     }
 
 	public Integer getPerformansId() {

@@ -54,16 +54,17 @@ public class PerformansServiceImpl implements PerformansService{
 		List<PerformansEntity> performansEntityList = this.performansRepository.findPerformansByHaftaSira(haftaId);
 		
 		if(performansEntityList != null && !performansEntityList.isEmpty()) {
-			performansEntityList.stream().forEach(performans -> {
-			
-			BigDecimal calismaSaati = new BigDecimal(haftaEntity.get().getCalisma_saati());
-			BigDecimal bakilanCagri = new BigDecimal(performans.getBakilanCagri());
-			BigDecimal kisiCalismaSaati = new BigDecimal(performans.getKisiCalismaSaati());
-
-			BigDecimal bakilanCagriTam = (calismaSaati.multiply(bakilanCagri)).divide(kisiCalismaSaati, 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
-			
-			performans.setBakilanCagriTam(bakilanCagriTam.intValue());
-			this.performansRepository.save(performans);
+			performansEntityList.stream().forEach(performansEntity -> {
+				
+				if(performansEntity.getBakilanCagri() == 0) {
+					performansEntity.setBakilanCagriTam(performansEntity.getBakilanCagri());
+				}else {
+					BigDecimal bakilanCagriTam = (new BigDecimal(haftaEntity.get().getCalisma_saati()).multiply(new BigDecimal(performansEntity.getBakilanCagri())))
+							.divide(new BigDecimal(performansEntity.getKisiCalismaSaati()), 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
+					performansEntity.setBakilanCagriTam(bakilanCagriTam.intValue());
+				}
+				
+				this.performansRepository.save(performansEntity);
 			});
 			
 			BigDecimal minBakilanCagriTam = performansEntityList.stream()
@@ -77,8 +78,18 @@ public class PerformansServiceImpl implements PerformansService{
 	                .orElse(BigDecimal.ZERO);
 
 	        performansEntityList.stream().forEach(performansEntity -> {
-	        	BigDecimal ccsPuani = (((new BigDecimal(performansEntity.getBakilanCagriTam()).subtract(minBakilanCagriTam)).divide(maxBakilanCagriTam.subtract(minBakilanCagriTam), 10, BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal("25"))).add(new BigDecimal("75")).setScale(0, BigDecimal.ROUND_HALF_UP);
-	        	performansEntity.setCcsPuani(ccsPuani.longValue());
+	        	
+	        	if(performansEntity.getKisiCalismaSaati() == 0) {
+	        		if(performansEntity.getHaftaSira() == 1) {
+	        			performansEntity.setCcsPuani(75L);
+	        		}else {
+	        			PerformansEntity performans = this.performansRepository.findPerformansByPersonelIdAndHaftaSira(Long.valueOf(performansEntity.getPersonelId()), performansEntity.getHaftaSira().longValue()-1);
+	        			performansEntity.setCcsPuani(performans.getCcsPuani());
+	        		}
+	        	}else {
+		        	BigDecimal ccsPuani = (((new BigDecimal(performansEntity.getBakilanCagriTam()).subtract(minBakilanCagriTam)).divide(maxBakilanCagriTam.subtract(minBakilanCagriTam), 10, BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal("25"))).add(new BigDecimal("75")).setScale(0, BigDecimal.ROUND_HALF_UP);
+		        	performansEntity.setCcsPuani(ccsPuani.longValue());
+	        	}
 				this.performansRepository.save(performansEntity);
 			});
 		}
@@ -97,9 +108,17 @@ public class PerformansServiceImpl implements PerformansService{
 				BigDecimal yoneticiPuaniDegeri = new BigDecimal(yoneticiPuani.getYoneticiPuani());
 				BigDecimal ccsPuani = new BigDecimal(performansEntity.getCcsPuani());
 
-				BigDecimal ypdPuani = ((agirlik.multiply(yoneticiPuaniDegeri)).add((new BigDecimal(100).subtract(agirlik)).multiply(ccsPuani))).divide(new BigDecimal(100), 10, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
-				
-				performansEntity.setYpdPuani(ypdPuani.longValue());
+	        	if(performansEntity.getKisiCalismaSaati() == 0) {
+	        		if(performansEntity.getHaftaSira() == 1) {
+	        			performansEntity.setYpdPuani(75L);
+	        		}else {
+	        			PerformansEntity performans = this.performansRepository.findPerformansByPersonelIdAndHaftaSira(Long.valueOf(performansEntity.getPersonelId()), performansEntity.getHaftaSira().longValue()-1);
+	        			performansEntity.setYpdPuani(performans.getYpdPuani());
+	        		}
+	        	}else {
+					BigDecimal ypdPuani = ((agirlik.multiply(yoneticiPuaniDegeri)).add((new BigDecimal(100).subtract(agirlik)).multiply(ccsPuani))).divide(new BigDecimal(100), 10, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
+					performansEntity.setYpdPuani(ypdPuani.longValue());
+	        	}
 				
 				this.performansRepository.save(performansEntity);
 			}
@@ -129,31 +148,36 @@ public class PerformansServiceImpl implements PerformansService{
 				BigDecimal yenidenAcilanCagri = new BigDecimal(performansEntity.getYenidenAcilanCagri());
 				BigDecimal kisiCalismaSaati = new BigDecimal(performansEntity.getKisiCalismaSaati());
 
-				BigDecimal yenidenAcilanCagriTam = (calismaSaati.multiply(yenidenAcilanCagri)).divide(kisiCalismaSaati, 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
+				BigDecimal yenidenAcilanCagriTam = new BigDecimal(0);
+				if(performansEntity.getYenidenAcilanCagri() == 0) {
+					performansEntity.setYenidenAcilanCagriTam(performansEntity.getYenidenAcilanCagri());
+				}else {
+					yenidenAcilanCagriTam = (calismaSaati.multiply(yenidenAcilanCagri)).divide(kisiCalismaSaati, 2, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
+					performansEntity.setYenidenAcilanCagriTam(yenidenAcilanCagriTam.intValue());
+				}
+			
+				if(performansEntity.getKisiCalismaSaati() == 0) {
+	        		if(performansEntity.getHaftaSira() == 1) {
+	        			performansEntity.setYenidenAcilanCagriPuani(75L);
+	        			performansEntity.setYcsPuani(75L);
+	        		}else {
+	        			PerformansEntity performans = this.performansRepository.findPerformansByPersonelIdAndHaftaSira(Long.valueOf(performansEntity.getPersonelId()), performansEntity.getHaftaSira().longValue()-1);
+	        			performansEntity.setYenidenAcilanCagriPuani(performans.getYenidenAcilanCagriPuani());
+	        			performansEntity.setYcsPuani(performans.getYcsPuani());
+	        		}
+	        	}else {
+					BigDecimal yenidenAcilanCagriPuani = (((yenidenAcilanCagriTam.subtract(minYenidenAcilanCagriTam)).divide(maxYenidenAcilanCagriTam.subtract(minYenidenAcilanCagriTam), 2, BigDecimal.ROUND_HALF_UP)).multiply(new BigDecimal(-25))).add(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_HALF_UP);				
+					performansEntity.setYenidenAcilanCagriPuani(yenidenAcilanCagriPuani.longValue());
+					
+					BigDecimal ycsPuani = ((new BigDecimal(yenidenAcilanCagriDto.getYenidenAcilanPuan()).multiply(new BigDecimal(yenidenAcilanCagriPuani.intValue())))
+							.add(new BigDecimal(yenidenAcilanCagriDto.getYoneticiPuan()).multiply(new BigDecimal(performansEntity.getYoneticiPuani().intValue())))
+							.add((new BigDecimal(100).subtract(new BigDecimal(yenidenAcilanCagriDto.getYenidenAcilanPuan())).subtract(new BigDecimal(yenidenAcilanCagriDto.getYoneticiPuan())))
+							.multiply(new BigDecimal(performansEntity.getCcsPuani()))))
+							.divide(new BigDecimal(100), 10, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
+					
+					performansEntity.setYcsPuani(ycsPuani.longValue());
+	        	}
 
-				BigDecimal yenidenAcilanCagriPuani = (((yenidenAcilanCagriTam.subtract(minYenidenAcilanCagriTam))
-				        .divide(maxYenidenAcilanCagriTam.subtract(minYenidenAcilanCagriTam), 2, BigDecimal.ROUND_HALF_UP))
-				        .multiply(new BigDecimal(-25)))
-				        .add(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_HALF_UP);				
-				
-				performansEntity.setYenidenAcilanCagriTam(yenidenAcilanCagriTam.intValue());
-				performansEntity.setYenidenAcilanCagriPuani(yenidenAcilanCagriPuani.longValue());
-
-				BigDecimal yenidenAcilanPuan = new BigDecimal(yenidenAcilanCagriDto.getYenidenAcilanPuan());
-				BigDecimal yenidenAcilanCagriPuaniBigDecimal = new BigDecimal(yenidenAcilanCagriPuani.intValue());
-				BigDecimal yoneticiPuan = new BigDecimal(yenidenAcilanCagriDto.getYoneticiPuan());
-				BigDecimal performansYoneticiPuani = new BigDecimal(performansEntity.getYoneticiPuani().intValue());
-				BigDecimal ccsPuani = new BigDecimal(performansEntity.getCcsPuani());
-
-
-				BigDecimal ycsPuani = ((yenidenAcilanPuan.multiply(yenidenAcilanCagriPuaniBigDecimal))
-						.add(yoneticiPuan.multiply(performansYoneticiPuani))
-						.add((new BigDecimal(100).subtract(yenidenAcilanPuan).subtract(yoneticiPuan))
-						.multiply(ccsPuani)))
-						.divide(new BigDecimal(100), 10, BigDecimal.ROUND_HALF_UP).setScale(0, BigDecimal.ROUND_HALF_UP);
-				
-				performansEntity.setYcsPuani(ycsPuani.longValue());
-				
 				this.performansRepository.save(performansEntity);
 			});
 		}
@@ -161,6 +185,7 @@ public class PerformansServiceImpl implements PerformansService{
 		return this.performansRepository.findPerformansByHaftaSira(yenidenAcilanCagriDto.getHaftaId());
 
 	}
+	
 	
 	@Override
 	public Map<Integer, List<PerformansEntity>> getCcsYcsYpdEkipPersonal(Integer hafta1, Integer hafta2, String ekip) {
@@ -195,18 +220,18 @@ public class PerformansServiceImpl implements PerformansService{
 		
 		List<Map<String, Double>> tahminiCagriMapList = new ArrayList<>();
 		Map<String, Double> tahminCagriSayiMap = new HashMap<>();
-		Map<String, Double> tahminCagriSureMap = new HashMap<>();
+		Map<String, Double> tahminBeklenenCagriAdedi = new HashMap<>();
 
 		List<PerformansEntity> performansList = this.performansRepository.findPerformansByPersonelId(personelId);
 		
 		Double averageBakilanCagriTam = performansList.stream().filter(performans -> performans.getBakilanCagriTam() != null).mapToDouble(PerformansEntity::getBakilanCagriTam).average().orElse(Double.NaN);
-		Double averageKisiCalismaSaati = performansList.stream().filter(performans -> performans.getKisiCalismaSaati() != null).mapToDouble(PerformansEntity::getKisiCalismaSaati).average().orElse(Double.NaN);
+		Double averageYenidenAcilanCagriTam = performansList.stream().filter(performans -> performans.getYenidenAcilanCagriTam() != null).mapToDouble(PerformansEntity::getYenidenAcilanCagriTam).average().orElse(Double.NaN);
 
 		tahminCagriSayiMap.put("Tahmini Çözülen Çağrı Sayısı", Double.valueOf(Math.round(averageBakilanCagriTam * 100) / 100));
 		tahminiCagriMapList.add(tahminCagriSayiMap);
 		
-		tahminCagriSureMap.put("Tahmini Çözülen Çağrı Süre", Double.valueOf(Math.round(averageKisiCalismaSaati * 100) / 100));
-		tahminiCagriMapList.add(tahminCagriSureMap);
+		tahminBeklenenCagriAdedi.put("Tahmini Açılması Beklenen Çağrı Adedi", Double.valueOf(Math.round(averageYenidenAcilanCagriTam * 100) / 100));
+		tahminiCagriMapList.add(tahminBeklenenCagriAdedi);
 	
 		return tahminiCagriMapList;
 	}
