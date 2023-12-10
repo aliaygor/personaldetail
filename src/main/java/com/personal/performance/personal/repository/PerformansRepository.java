@@ -24,10 +24,10 @@ public interface PerformansRepository extends JpaRepository<PerformansEntity, Lo
 
 	PerformansEntity findFirstByOrderByYenidenAcilanCagriTamDesc();
 	
-	@Query("SELECT p FROM PerformansEntity p WHERE (p.haftaSira =:hafta1 or p.haftaSira =:hafta2) and p.ekipId =:ekip")
+	@Query("SELECT p FROM PerformansEntity p WHERE p.ekipId =:ekip and p.haftaSira BETWEEN :hafta1 AND :hafta2")
     List<PerformansEntity> findByPerformansByHaftaSiraAndEkipId(@Param("hafta1") Integer hafta1, @Param("hafta2") Integer hafta2, @Param("ekip") Integer ekip);
 
-	@Query("SELECT p FROM PerformansEntity p WHERE (p.haftaSira =:hafta1 or p.haftaSira =:hafta2)")
+	@Query("SELECT p FROM PerformansEntity p WHERE p.haftaSira BETWEEN :hafta1 AND :hafta2")
     List<PerformansEntity> findByPerformansByHaftaSira(@Param("hafta1") Integer hafta1, @Param("hafta2") Integer hafta2);
 	
 	@Query("SELECT p FROM PerformansEntity p WHERE (p.haftaSira =:hafta1 or p.haftaSira =:hafta2) and p.personelId =:personelId")
