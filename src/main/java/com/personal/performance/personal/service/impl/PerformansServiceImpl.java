@@ -217,6 +217,11 @@ public class PerformansServiceImpl implements PerformansService{
 	}
 	
 	@Override
+	public List<PerformansEntity> getPersonalByHaftalarBtwHafta(Integer hafta1, Integer hafta2, Integer personelId) {
+		return this.performansRepository.findByPerformansByHaftaSiraAndPersonelIdBtw(hafta1, hafta2, personelId);
+	}
+	
+	@Override
 	public List<Map<String, Double>> getPersonalCagriSayiSureTahmin(Integer personelId) {
 		
 		List<Map<String, Double>> tahminiCagriMapList = new ArrayList<>();

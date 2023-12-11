@@ -73,6 +73,11 @@ public class PerformansController {
 	public List<PerformansEntity> getPersonalByHaftalar(@RequestParam Integer hafta1, @RequestParam Integer hafta2, @RequestParam Integer personelId){
 		return this.performansService.getPersonalByHaftalar(hafta1, hafta2, personelId);
 	}
+	
+	@GetMapping("/getPersonalByHaftalarBtwHafta")
+	public List<PerformansEntity> getPersonalByHaftalarBtwHafta(@RequestParam Integer hafta1, @RequestParam Integer hafta2, @RequestParam Integer personelId){
+		return this.performansService.getPersonalByHaftalarBtwHafta(hafta1, hafta2, personelId);
+	}
 
 	@GetMapping("/getPersonalCagriSayiSureTahmin")
 	public List<Map<String, Double>> getPersonalCagriSayiSureTahmin(@RequestParam Integer personelId){

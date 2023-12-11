@@ -30,6 +30,8 @@ public interface PerformansService {
 	
 	public List<PerformansEntity> getPersonalByHaftalar(Integer hafta1, Integer hafta2, Integer personelId);
 	
+	public List<PerformansEntity> getPersonalByHaftalarBtwHafta(Integer hafta1, Integer hafta2, Integer personelId);
+	
 	public List<Map<String, Double>> getPersonalCagriSayiSureTahmin(Integer personelId);
 
 }
