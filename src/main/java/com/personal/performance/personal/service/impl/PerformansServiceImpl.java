@@ -238,8 +238,8 @@ public class PerformansServiceImpl implements PerformansService{
 		if(performansListSize == 1) {
 			PerformansEntity performans = performansList.get(0);
             if (performans.getHaftaSira() == 1) {
-                Double bakilanCagri = performans.getBakilanCagri() != null ? performans.getBakilanCagri().doubleValue() : 0.0;
-                Double yenidenAcilanCagri = performans.getYenidenAcilanCagri() != null ? performans.getYenidenAcilanCagri().doubleValue() : 0.0;
+                Double bakilanCagri = performans.getBakilanCagriTam() != null ? performans.getBakilanCagriTam().doubleValue() : 0.0;
+                Double yenidenAcilanCagri = performans.getYenidenAcilanCagriTam() != null ? performans.getYenidenAcilanCagriTam().doubleValue() : 0.0;
                 tahminiCozulenCagriSayisi = bakilanCagri;
                 tahminiBeklenenCagriAdedi = yenidenAcilanCagri;
             }
@@ -247,26 +247,21 @@ public class PerformansServiceImpl implements PerformansService{
             PerformansEntity performans1 = performansList.get(performansListSize - 1);
             PerformansEntity performans2 = performansList.get(performansListSize - 2);
 
-            Double bakilanCagriFark = performans2.getBakilanCagri() != null && performans1.getBakilanCagri() != null
-                    ? performans1.getBakilanCagri().doubleValue() - performans2.getBakilanCagri().doubleValue()
+            Double bakilanCagriFark = performans2.getBakilanCagriTam() != null && performans1.getBakilanCagriTam() != null
+                    ? performans1.getBakilanCagriTam().doubleValue() - performans2.getBakilanCagriTam().doubleValue()
                     : 0.0;
 
             tahminiCozulenCagriSayisi = bakilanCagriFark != null ? Math.abs(bakilanCagriFark) : 0.0;
-            tahminiCozulenCagriSayisi = tahminiCozulenCagriSayisi + performans1.getBakilanCagri();
+            tahminiCozulenCagriSayisi = tahminiCozulenCagriSayisi + performans1.getBakilanCagriTam();
             
             
-            Double yenidenAcilanCagriFark = performans2.getYenidenAcilanCagri() != null && performans1.getYenidenAcilanCagri() != null
-                    ? performans1.getYenidenAcilanCagri().doubleValue() - performans2.getYenidenAcilanCagri().doubleValue()
+            Double yenidenAcilanCagriFark = performans2.getYenidenAcilanCagriTam() != null && performans1.getYenidenAcilanCagriTam() != null
+                    ? performans1.getYenidenAcilanCagriTam().doubleValue() - performans2.getYenidenAcilanCagriTam().doubleValue()
                     : 0.0;
 
             tahminiBeklenenCagriAdedi = yenidenAcilanCagriFark != null ? Math.abs(yenidenAcilanCagriFark) : 0.0;
-            tahminiBeklenenCagriAdedi = tahminiBeklenenCagriAdedi + performans1.getYenidenAcilanCagri();
+            tahminiBeklenenCagriAdedi = tahminiBeklenenCagriAdedi + performans1.getYenidenAcilanCagriTam();
         }
-
-		
-		
-		//Double averageBakilanCagriTam = performansList.stream().filter(performans -> performans.getBakilanCagriTam() != null).mapToDouble(PerformansEntity::getBakilanCagriTam).average().orElse(Double.NaN);
-		//Double averageYenidenAcilanCagriTam = performansList.stream().filter(performans -> performans.getYenidenAcilanCagriTam() != null).mapToDouble(PerformansEntity::getYenidenAcilanCagriTam).average().orElse(Double.NaN);
 
 		tahminCagriSayiMap.put("Tahmini Çözülen Çağrı Sayısı", Double.valueOf(Math.round(tahminiCozulenCagriSayisi * 100) / 100));
 		tahminiCagriMapList.add(tahminCagriSayiMap);
