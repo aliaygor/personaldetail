@@ -83,4 +83,9 @@ public class PerformansController {
 	public List<Map<String, Double>> getPersonalCagriSayiSureTahmin(@RequestParam Integer personelId){
 		return this.performansService.getPersonalCagriSayiSureTahmin(personelId);
 	}
+
+	@GetMapping("/allPersonelData")
+	public List<PerformansEntity> getAllPersonelData(@RequestParam Integer personelId){
+		return this.performansService.getAllPersonelData(personelId);
+	}
 }

@@ -58,6 +58,12 @@ public class PerformansEntity {
 
     @Column(name = "ycs_puani")
     private Long ycsPuani; 
+    
+    @Column(name = "tahmin_cozulme_cagri")
+    private Integer tahminCozulmeCagri; 
+    
+    @Column(name = "tahmin_yeniden_acilma_cagri")
+    private Integer tahminYenidenAcilmaCagri; 
 
     @ManyToOne
     @JoinColumn(name = "personel_id", insertable = false, updatable = false)
@@ -233,5 +239,22 @@ public class PerformansEntity {
 	public void setHaftalar(HaftalarEntity haftalar) {
 		this.haftalar = haftalar;
 	}
+
+	public Integer getTahminCozulmeCagri() {
+		return tahminCozulmeCagri;
+	}
+
+	public void setTahminCozulmeCagri(Integer tahminCozulmeCagri) {
+		this.tahminCozulmeCagri = tahminCozulmeCagri;
+	}
+
+	public Integer getTahminYenidenAcilmaCagri() {
+		return tahminYenidenAcilmaCagri;
+	}
+
+	public void setTahminYenidenAcilmaCagri(Integer tahminYenidenAcilmaCagri) {
+		this.tahminYenidenAcilmaCagri = tahminYenidenAcilmaCagri;
+	}
+	
         
 }

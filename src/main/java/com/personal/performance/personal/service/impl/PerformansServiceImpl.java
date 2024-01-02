@@ -179,6 +179,15 @@ public class PerformansServiceImpl implements PerformansService{
 					performansEntity.setYcsPuani(ycsPuani.longValue());
 	        	}
 
+				if(performansEntity.getHaftaSira() == 1 || performansEntity.getHaftaSira() == 2) {
+					performansEntity.setTahminCozulmeCagri(0);
+					performansEntity.setTahminYenidenAcilmaCagri(0);
+				}else {
+        			PerformansEntity performansOldHafta = this.performansRepository.findPerformansByPersonelIdAndHaftaSira(Long.valueOf(performansEntity.getPersonelId()), performansEntity.getHaftaSira().longValue()-1);
+        			performansEntity.setTahminCozulmeCagri(Math.abs(performansEntity.getBakilanCagriTam() - performansOldHafta.getBakilanCagriTam() + performansEntity.getBakilanCagriTam()));
+					performansEntity.setTahminYenidenAcilmaCagri(Math.abs(performansEntity.getYenidenAcilanCagriTam() - performansOldHafta.getYenidenAcilanCagriTam() + performansEntity.getYenidenAcilanCagriTam()));
+				}
+				
 				this.performansRepository.save(performansEntity);
 			});
 		}
@@ -220,6 +229,12 @@ public class PerformansServiceImpl implements PerformansService{
 	public List<PerformansEntity> getPersonalByHaftalarBtwHafta(Integer hafta1, Integer hafta2, Integer personelId) {
 		return this.performansRepository.findByPerformansByHaftaSiraAndPersonelIdBtw(hafta1, hafta2, personelId);
 	}
+	
+	@Override
+	public List<PerformansEntity> getAllPersonelData(Integer personelId) {
+		return this.performansRepository.findPerformansByPersonelId(personelId);
+	}
+	
 	
 	@Override
 	public List<Map<String, Double>> getPersonalCagriSayiSureTahmin(Integer personelId) {
