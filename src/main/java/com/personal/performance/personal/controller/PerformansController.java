@@ -80,7 +80,7 @@ public class PerformansController {
 	}
 
 	@GetMapping("/getPersonalCagriSayiSureTahmin")
-	public List<Map<String, Double>> getPersonalCagriSayiSureTahmin(@RequestParam Integer personelId){
+	public List<Map<String, Integer>> getPersonalCagriSayiSureTahmin(@RequestParam Integer personelId){
 		return this.performansService.getPersonalCagriSayiSureTahmin(personelId);
 	}
 

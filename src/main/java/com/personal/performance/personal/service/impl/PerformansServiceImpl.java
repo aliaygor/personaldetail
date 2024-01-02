@@ -237,51 +237,28 @@ public class PerformansServiceImpl implements PerformansService{
 	
 	
 	@Override
-	public List<Map<String, Double>> getPersonalCagriSayiSureTahmin(Integer personelId) {
+	public List<Map<String, Integer>> getPersonalCagriSayiSureTahmin(Integer personelId) {
 		
-		List<Map<String, Double>> tahminiCagriMapList = new ArrayList<>();
-		Map<String, Double> tahminCagriSayiMap = new HashMap<>();
-		Map<String, Double> tahminBeklenenCagriAdedi = new HashMap<>();
+		List<Map<String, Integer>> tahminiCagriMapList = new ArrayList<>();
+		Map<String, Integer> tahminCagriSayiMap = new HashMap<>();
+		Map<String, Integer> tahminBeklenenCagriAdedi = new HashMap<>();
 		
 		List<PerformansEntity> performansList = this.performansRepository.findPerformansByPersonelId(personelId);
-		
-		Double tahminiCozulenCagriSayisi = 0.0;
-		Double tahminiBeklenenCagriAdedi = 0.0;
-		
 		int performansListSize = performansList != null ? performansList.size() : 0;
-		
-		if(performansListSize == 1) {
-			PerformansEntity performans = performansList.get(0);
-            if (performans.getHaftaSira() == 1) {
-                Double bakilanCagri = performans.getBakilanCagriTam() != null ? performans.getBakilanCagriTam().doubleValue() : 0.0;
-                Double yenidenAcilanCagri = performans.getYenidenAcilanCagriTam() != null ? performans.getYenidenAcilanCagriTam().doubleValue() : 0.0;
-                tahminiCozulenCagriSayisi = bakilanCagri;
-                tahminiBeklenenCagriAdedi = yenidenAcilanCagri;
-            }
-		}else if (performansListSize > 1) {
-            PerformansEntity performans1 = performansList.get(performansListSize - 1);
-            PerformansEntity performans2 = performansList.get(performansListSize - 2);
+		Integer tahminiCozulenCagriSayisi = 0;
+		Integer tahminiBeklenenCagriAdedi = 0;
+		if (performansListSize > 1) {
+			PerformansEntity performansSonHafta = performansList.get(performansListSize - 1);
+            PerformansEntity performansSonHaftadanOnceki = performansList.get(performansListSize - 2);
+            tahminiCozulenCagriSayisi = Math.abs(performansSonHafta.getBakilanCagriTam() - performansSonHaftadanOnceki.getBakilanCagriTam() + performansSonHafta.getBakilanCagriTam());
+            tahminiBeklenenCagriAdedi = Math.abs(performansSonHafta.getYenidenAcilanCagriTam() - performansSonHaftadanOnceki.getYenidenAcilanCagriTam() + performansSonHafta.getYenidenAcilanCagriTam());
 
-            Double bakilanCagriFark = performans2.getBakilanCagriTam() != null && performans1.getBakilanCagriTam() != null
-                    ? performans1.getBakilanCagriTam().doubleValue() - performans2.getBakilanCagriTam().doubleValue()
-                    : 0.0;
+		}
 
-            tahminiCozulenCagriSayisi = bakilanCagriFark != null ? Math.abs(bakilanCagriFark) : 0.0;
-            tahminiCozulenCagriSayisi = tahminiCozulenCagriSayisi + performans1.getBakilanCagriTam();
-            
-            
-            Double yenidenAcilanCagriFark = performans2.getYenidenAcilanCagriTam() != null && performans1.getYenidenAcilanCagriTam() != null
-                    ? performans1.getYenidenAcilanCagriTam().doubleValue() - performans2.getYenidenAcilanCagriTam().doubleValue()
-                    : 0.0;
-
-            tahminiBeklenenCagriAdedi = yenidenAcilanCagriFark != null ? Math.abs(yenidenAcilanCagriFark) : 0.0;
-            tahminiBeklenenCagriAdedi = tahminiBeklenenCagriAdedi + performans1.getYenidenAcilanCagriTam();
-        }
-
-		tahminCagriSayiMap.put("Tahmini Çözülen Çağrı Sayısı", Double.valueOf(Math.round(tahminiCozulenCagriSayisi * 100) / 100));
+		tahminCagriSayiMap.put("Tahmini Çözülen Çağrı Sayısı", tahminiCozulenCagriSayisi);
 		tahminiCagriMapList.add(tahminCagriSayiMap);
 		
-		tahminBeklenenCagriAdedi.put("Tahmini Açılması Beklenen Çağrı Adedi", Double.valueOf(Math.round(tahminiBeklenenCagriAdedi * 100) / 100));
+		tahminBeklenenCagriAdedi.put("Tahmini Açılması Beklenen Çağrı Adedi", tahminiBeklenenCagriAdedi);
 		tahminiCagriMapList.add(tahminBeklenenCagriAdedi);
 	
 		return tahminiCagriMapList;
